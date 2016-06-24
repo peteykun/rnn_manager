@@ -21,8 +21,13 @@ class Run < ActiveRecord::Base
 	  	super
 	end
 
-	def execute(hostname, username, password)
-		self.output = "Starting console...\n\n"
+	def execute(hostname, username, password, reset_console=true)
+		if reset_console
+			self.output = "Starting console...\n\n"
+		else
+			self.output += "\n\nStarting console...\n\n"
+		end
+
 		self.editable = false
 		self.save!
 
@@ -43,6 +48,23 @@ class Run < ActiveRecord::Base
 			  ssh.loop
 			end
 		end
+	end
+
+	def resume(hostname, username, password, step)
+		resume_checkpoint = nil
+
+		self.checkpoints.each do |checkpoint|
+			if checkpoint[:step] == step.to_i
+				resume_checkpoint = checkpoint
+			end
+		end
+
+		self.resume_at = resume_checkpoint[:step]
+		self.resume_epoch = resume_checkpoint[:epoch]
+		self.resume_training_minibatch = resume_checkpoint[:minibatch]
+		self.save!
+
+		self.execute(hostname, username, password, false)
 	end
 
 	def arguments
@@ -91,8 +113,8 @@ class Run < ActiveRecord::Base
 	def checkpoints
 	  result = []
 
-	  self.output.scan(/\[Checkpoint\] Checkpointed at Epoch (?<epoch>\d+), Minibatch (?<minibatch>\d+)./) do |epoch, minibatch|
-	  	result << {epoch: epoch, minibatch: minibatch}
+	  self.output.scan(/Step: (?<step>\d+)\tEpoch: (\d*[.])?\d+\tLoss: (\d*[.])?\d+\n\[Checkpoint\] Checkpointed at Epoch (?<epoch>\d+), Minibatch (?<minibatch>\d+)./) do |step, epoch, minibatch|
+	  	result << {step: step.to_i, epoch: epoch.to_i, minibatch: minibatch.to_i}
 	  end
 
 	  return result.last(5)

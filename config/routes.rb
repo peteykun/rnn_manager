@@ -4,8 +4,10 @@ Rails.application.routes.draw do
 
   resources :runs do
     get 'execute' => 'runs#execute_panel'
-    get 'fork' => 'runs#fork'
     post 'execute' => 'runs#execute'
+    get 'resume' => 'runs#resume_panel'
+    post 'resume' => 'runs#resume'
+    get 'fork' => 'runs#fork'
   end
 
 end

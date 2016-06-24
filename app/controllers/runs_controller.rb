@@ -41,11 +41,30 @@ class RunsController < ApplicationController
     render :new
   end
 
+  # GET /runs/1/resume
+  def resume_panel
+    @run = Run.find(params[:run_id])
+    @checkpoints = []
+
+    @run.checkpoints.each do |checkpoint|
+      @checkpoints << checkpoint[:step]
+    end
+
+    @checkpoints.reverse!
+
+    render :resume
+  end
+
+  # POST /runs/1/resume
+  def resume
+    @run = Run.find(params[:run_id])
+    @run.resume(params[:target], params[:username], params[:password], params[:checkpoint])
+    redirect_to @run
+  end
+
   # GET /runs/1/execute
   def execute_panel
     @run = Run.find(params[:run_id])
-    @servers = ['clserv', 'veri-server', 'mcastle1']
-
     render :execute
   end
 

@@ -88,6 +88,9 @@
 <%= link_to t('.fork', :default => t("helpers.links.fork")),
               run_fork_path(@run), :class => 'btn btn-default' %>
 
+<%= link_to t('.resume', :default => t("helpers.links.resume")),
+              run_resume_path(@run), :class => 'btn btn-default' %>
+
 <% end %>
 
 <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
