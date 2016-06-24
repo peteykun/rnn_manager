@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  task_name: MyString
+  batch_size: 1
+  embedding_dim: 1
+  memory_dim: 1
+  num_layers: 1
+  epochs: 1
+  resume_at: 1
+  resume_epoch: 1
+  resume_training_minibatch: 1
+  rnn_cell: MyString
+  ckpt_every: 1
+  correct_pairs: false
+  mux_network: false
+  output: MyText
+
+two:
+  task_name: MyString
+  batch_size: 1
+  embedding_dim: 1
+  memory_dim: 1
+  num_layers: 1
+  epochs: 1
+  resume_at: 1
+  resume_epoch: 1
+  resume_training_minibatch: 1
+  rnn_cell: MyString
+  ckpt_every: 1
+  correct_pairs: false
+  mux_network: false
+  output: MyText

@@ -1,0 +1,53 @@
+<%- model_class = Run -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th>Task</th>
+      <th>Memory</th>
+      <th>Layers</th>
+      <th>Cell</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @runs.each do |run| %>
+      <tr>
+        <td><%= link_to run.id, run_path(run) %></td>
+        <td><%= run.task_name %> (<%= 'no' if not run.mux_network %> mux, <%= 'no' if not run.correct_pairs %> cc)</td>
+        <td><%= run.memory_dim %></td>
+        <td><%= run.num_layers %></td>
+        <td><%= run.rnn_cell %></td>
+        <td><%= distance_of_time_in_words(run.created_at, Time.now) %> ago</td>
+        <td>
+          <%= link_to t('.show', :default => t("helpers.links.show")),
+                      run_path(run), :class => 'btn btn-default btn-xs' %>
+
+          <% if run.editable %>
+          <%= link_to t('.execute', :default => t("helpers.links.execute")),
+                      run_execute_path(run), :class => 'btn btn-default btn-xs' %>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_run_path(run), :class => 'btn btn-default btn-xs' %>
+          <% else %>
+          <%= link_to t('.fork', :default => t("helpers.links.fork")),
+                      run_fork_path(run), :class => 'btn btn-default btn-xs' %>
+          <% end %>
+
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      run_path(run),
+                      :method => :delete,
+                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                      :class => 'btn btn-xs btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_run_path,
+            :class => 'btn btn-primary' %>

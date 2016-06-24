@@ -1,0 +1,138 @@
+<%- model_class = Run -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:task_name) %>:</strong></dt>
+  <dd><%= @run.task_name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:batch_size) %>:</strong></dt>
+  <dd><%= @run.batch_size %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:embedding_dim) %>:</strong></dt>
+  <dd><%= @run.embedding_dim %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:memory_dim) %>:</strong></dt>
+  <dd><%= @run.memory_dim %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:num_layers) %>:</strong></dt>
+  <dd><%= @run.num_layers %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:epochs) %>:</strong></dt>
+  <dd><%= @run.epochs %></dd>
+  <!--
+  <dt><strong><%= model_class.human_attribute_name(:resume_at) %>:</strong></dt>
+  <dd><%= @run.resume_at %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:resume_epoch) %>:</strong></dt>
+  <dd><%= @run.resume_epoch %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:resume_training_minibatch) %>:</strong></dt>
+  <dd><%= @run.resume_training_minibatch %></dd>
+  -->
+  <dt><strong><%= model_class.human_attribute_name(:rnn_cell) %>:</strong></dt>
+  <dd><%= @run.rnn_cell %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:ckpt_every) %>:</strong></dt>
+  <dd><%= @run.ckpt_every %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:correct_pairs) %>:</strong></dt>
+  <dd><%= @run.correct_pairs %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:mux_network) %>:</strong></dt>
+  <dd><%= @run.mux_network %></dd>
+</dl>
+
+<% if not @run.output.empty? %>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= model_class.human_attribute_name(:output) %></h3>
+  </div>
+  <div class="panel-body">
+    <pre class="pre-scrollable" id="output_console"><%= @run.output %></pre>
+  </div>
+</div>
+
+<h3>Loss values</h3>
+<div id="loss" style="width:600px;height:300px"></div>
+<br>
+
+<h3>Token-level accuracies</h3>
+<div id="token" style="width:600px;height:300px"></div>
+<br>
+
+<h3>Localization accuracies</h3>
+<div id="localization" style="width:600px;height:300px"></div>
+<br>
+
+<h3>Repair accuracies</h3>
+<div id="repair" style="width:600px;height:300px"></div>
+
+<br>
+
+<% else %>
+
+<br>
+
+<h4>Command preview</h4>
+<pre>python seq2seq-attention.py <%= @run.arguments %></pre>
+<br>
+
+<% end %>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              runs_path, :class => 'btn btn-default'  %>
+
+<% if @run.editable %>
+
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_run_path(@run), :class => 'btn btn-default' %>
+
+<%= link_to t('.execute', :default => t("helpers.links.execute")),
+              run_execute_path(@run), :class => 'btn btn-default' %>
+
+<% else %>
+
+<%= link_to t('.fork', :default => t("helpers.links.fork")),
+              run_fork_path(@run), :class => 'btn btn-default' %>
+
+<% end %>
+
+<%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              run_path(@run),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              :class => 'btn btn-danger' %>
+<br><br>
+
+
+<script>
+$(function() {
+  var faye = new Faye.Client('http://localhost:9292/faye');
+
+  faye.subscribe('/messages/<%= @run.id %>' , function (data) {
+    $('#output_console').html(data);
+    $('#output_console').scrollTop($('#output_console')[0].scrollHeight);
+  });
+
+  $('#output_console').scrollTop($('#output_console')[0].scrollHeight);
+  $.plot($('#loss'), [ {label: "Validation",
+                        data: [<% @run.stats[:validation].each_with_index do |x, i|  %>[<%= i %>, <%= x[:loss] %>],<% end %>]},
+
+                       {label: "Test",
+                        data: [<% @run.stats[:test].each_with_index do |x, i|  %>[<%= i %>, <%= x[:loss] %>],<% end %>]},
+
+                       {label: "Training",
+                        data: [<% @run.stats[:training].each_with_index do |x, i|  %>[<%= i %>, <%= x[:loss] %>],<% end %>]} ]);
+
+  $.plot($('#token'), [ {label: "Validation",
+                         data: [<% @run.stats[:validation].each_with_index do |x, i|  %>[<%= i %>, <%= x[:token] %>],<% end %>,]},
+
+                        {label: "Test",
+                         data: [<% @run.stats[:test].each_with_index do |x, i|  %>[<%= i %>, <%= x[:token] %>],<% end %>,]} ]);
+
+  $.plot($('#localization'), [ {label: "Validation",
+                                data: [<% @run.stats[:validation].each_with_index do |x, i|  %>[<%= i %>, <%= x[:localization] %>],<% end %>,]},
+
+                               {label: "Test",
+                                data: [<% @run.stats[:test].each_with_index do |x, i|  %>[<%= i %>, <%= x[:localization] %>],<% end %>,]} ]);
+
+  $.plot($('#repair'), [ {label: "Validation",
+                          data: [<% @run.stats[:validation].each_with_index do |x, i|  %>[<%= i %>, <%= x[:repair] %>],<% end %>]},
+
+                         {label: "Test",
+                          data: [<% @run.stats[:test].each_with_index do |x, i|  %>[<%= i %>, <%= x[:repair] %>],<% end %>]} ]);
+});
+</script>

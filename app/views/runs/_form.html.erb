@@ -1,0 +1,97 @@
+<%= form_for @run, :html => { :class => "form-horizontal run" } do |f| %>
+
+  <% if @run.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@run.errors.count, "error") %> prohibited this run from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @run.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :task_name, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :task_name, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:task_name) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :batch_size, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :batch_size, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:batch_size) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :embedding_dim, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :embedding_dim, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:embedding_dim) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :memory_dim, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :memory_dim, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:memory_dim) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :num_layers, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :num_layers, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:num_layers) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :epochs, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :epochs, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:epochs) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :rnn_cell, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.select :rnn_cell, ['RNN', 'LSTM', 'GRU'], {}, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:rnn_cell) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :ckpt_every, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :ckpt_every, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:ckpt_every) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :correct_pairs, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.check_box :correct_pairs, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:correct_pairs) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :mux_network, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.check_box :mux_network, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:mux_network) %>
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit nil, :class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                runs_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>
