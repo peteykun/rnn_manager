@@ -45,6 +45,10 @@ group :development do
   gem 'spring'
 end
 
+group :production do
+  gem 'pg'
+end
+
 # Bootstrap
 gem "therubyracer"
 gem "less-rails"

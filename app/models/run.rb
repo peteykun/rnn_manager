@@ -33,9 +33,9 @@ class Run < ActiveRecord::Base
 
 		Thread.new do
 			Net::SSH.start(hostname, username, password: password) do |ssh|
-			  ssh.exec("export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:/usr/local/cuda/lib64\";
+			  ssh.exec("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64;
+			  			export PATH=$PATH:/usr/local/cuda/bin;
 			  			export CUDA_HOME=/usr/local/cuda;
-			  			export PATH=$PATH:/usr/local/cuda-7.5/bin;
 			  			cd ~/client;
 			  			source ~/env/bin/activate;
 			  			python seq2seq-attention.py #{self.arguments}") do |ch, stream, data|
@@ -122,8 +122,8 @@ class Run < ActiveRecord::Base
 
   private
 	def broadcast(channel, data)
-      message = {:channel => channel, :data => data}
-	  uri = URI.parse("http://localhost:9292/faye")
+          message = {:channel => channel, :data => data}
+	  uri = URI.parse("http://10.192.31.20:9292/faye")
 	  Net::HTTP.post_form(uri, :message => message.to_json)
 	end
 end

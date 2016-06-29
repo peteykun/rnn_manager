@@ -8,14 +8,14 @@
     <%= label_tag :target, 'Target', {:class => 'control-label col-lg-2'} %>
     <div class="col-lg-10">
       <%#= select_tag :target, options_for_select(@servers), {:class => 'form-control', :disabled => true} %>
-      <%= text_field_tag :target, 'clserv', {:class => 'form-control'} %>
+      <%= text_field_tag :target, 'localhost', {:class => 'form-control'} %>
     </div>
   </div>
 
   <div class="form-group">
     <%= label_tag :username, 'username', {:class => 'control-label col-lg-2'} %>
     <div class="col-lg-10">
-      <%= text_field_tag :username, 'soham.pal', {:class => 'form-control'} %>
+      <%= text_field_tag :username, '', {:class => 'form-control'} %>
     </div>
   </div>
 
